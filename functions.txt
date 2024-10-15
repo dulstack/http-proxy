@@ -1,0 +1,15 @@
+1.Accept the connection from client
+2.Get the first 8194 characters of the request
+3.If no two line breaks found, then fail
+4.Get the string before two line breaks(header)			--sc_header(string client's header)
+5.Make the header uppercase(headers should be case-insensitive)
+6.Get the string after two line breaks(first part of content)
+7.If content-length is found, then calculate how much bytes left to read(content_length - length of first piece of content)
+8.Read the remaining content				-- sc_cont
+9.Get the line with CONNECT using the HEADER(const std::string&) function. If not found, fail		-- the s_con variable
+10.Parse the string. The format should be: "[host]:[port] HTTP/[VERSION]", otherwise fail
+11.Get the host from string and get the addresss and port	--	wxIPV4address addr
+12.Send the header(without connect header, this step should remove the other headers, but not removed for simplicity) to [addr]
+13.Send the content
+14.Do the same thing as in steps 2-8		--sr_header, sr_cont(string request)
+15.Send the sr_header, sr_cont to the client
