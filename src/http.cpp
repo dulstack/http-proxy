@@ -34,5 +34,20 @@ std::string HTTP::get_header(const char* header, const char* name){
  return res;
 }
 std::string HTTP::remove_header(const char* header, const char* name){
- 
+ std::string res=header;
+ int i=0, end=0;
+ for(i=0; i!=-1; i++){
+  i=res.find(name, i);
+  //find if it is really a header name
+  if(i==0||(i>2&&res.c_str()[i-2]=='\r'&&res.c_str()[i-1]=='\n')){
+   printf("%i\n", i);
+   end=res.find("\r\n", i+1);
+   if(end==-1){end=res.size()-1;}		//no line break character found, so end of substring to cut will be at the end of header
+   else{end+=2;}
+   res.erase(i, end-i);
+   break;
+  }
+  i++;
+ }
+ return res;
 }
