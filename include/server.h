@@ -14,6 +14,7 @@ class Server{
   bool start(unsigned short port);
   Request get_request(wxSocketBase* sock);			//will read from socket
   bool accept(wxSocketBase* sock);
+  void send_file(wxSocketBase* sock, const char* path, int status_code=200);
   void stop();
   wxSocketServer* get_sock();
  private:

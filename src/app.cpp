@@ -28,11 +28,13 @@ void App::on_sock(wxSocketEvent& evt){
  switch(evt.GetSocketEvent()){
   case wxSOCKET_INPUT:{
    s.accept(sock);
+   break;
   }
   case wxSOCKET_LOST:{
    fprintf(stderr, "Connection lost\n");
    s.stop();
+   break;
   }
-  sock->Destroy();
  }
+ sock->Destroy();
 }
