@@ -33,6 +33,25 @@ wxSocketServer* Server::get_sock(){
 bool Server::accept(wxSocketBase* sock){
  Request cl_rq=get_request(sock);
  printf("%s\n", cl_rq.header.c_str());
+ std::string get=HTTP::get_header(cl_rq.header.c_str(), "GET"), host="";
+ unsigned short port=80;
+ if(get.substr(0, 7)=="HTTP://"){get.erase(0,7);}		//remove 'http://' from GET header ,because it will make us confuse where are the actual address and port
+ if(get.substr(0, 8)=="HTTPS://"){get.erase(0,8);}
+ printf("%s\n", get.c_str());
+ int pos=get.find(":");
+ if(pos==-1){
+  pos=get.find(" ");
+  if(pos==-1)return 0;			//TODO: send 400 bad request
+  host=get.substr(0, pos);
+ }
+ else{
+  host=get.substr(0, pos);
+  int end_pos=get.find("/", pos+1);		//end of port
+  if(end_pos==-1){if((end_pos=get.find(" ", pos+1))==-1){return 0;}}
+  std::string s_port=get.substr(pos+1, end_pos-pos-1);
+  port=(unsigned short)stoi(s_port);
+ }
+ 
  return true;
 }
 

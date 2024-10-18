@@ -37,4 +37,5 @@ void App::on_sock(wxSocketEvent& evt){
   }
  }
  sock->Destroy();
+ s.stop();
 }

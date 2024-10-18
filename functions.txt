@@ -6,7 +6,7 @@
 6.Get the string after two line breaks(first part of content)
 7.If content-length is found, then calculate how much bytes left to read(content_length - length of first piece of content)
 8.Read the remaining content				-- sc_cont
-9.Get the line with CONNECT using the HEADER(const std::string&) function. If not found, fail		-- the s_con variable
+9.Get the line with CONNECT using the HTTP::get_header(const std::string&, const char*) function. If not found, fail		-- the s_con variable
 10.Parse the string. The format should be: "[host]:[port] HTTP/[VERSION]", otherwise fail
 11.Get the host from string and get the addresss and port	--	wxIPV4address addr
 12.Send the header(without connect header, this step should remove the other headers, but not removed for simplicity) to [addr]
