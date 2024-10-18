@@ -17,18 +17,18 @@ static std::string get_line(const std::string& str, int line){
 std::string HTTP::get_header(const char* header, const char* name){
  std::string res="";
  int name_len=strlen(name);
- std::string subs;
- for(int i=0;i<40000; i++){			//set the limit of lines to check to prevent possible infinite loop
-  subs=get_line(header, i);
-  if(subs.size()<=0)break;
-  if(subs.size()>=name_len){
-   subs.erase(0, name_len);
-   if(subs.c_str()[0]==' '){			//if there is more than one space at beginning, then it is the real header
-    while(subs.c_str()[0]==' '){		//remove space characters
-     subs.erase(0, 1);
-    }
-    res=subs;break;
-   }
+ int lines=0;
+ std::string s_header=header;
+ for(int pos=0; pos!=-1; lines++){
+  pos=s_header.find("\r\n", pos+1);
+ }
+ 
+ for(int i=0; i<lines; i++){
+  std::string line=get_line(header, i);
+  if(line.size()>name_len&&line.substr(0, name_len)==name&&(line.c_str()[name_len]==' '||line.c_str()[name_len]==':')){
+   res=line.substr(name_len+1, (line.size()-name_len-1));
+   while(res.c_str()[0]==' '){res.erase(0,1);}
+   break;
   }
  }
  return res;

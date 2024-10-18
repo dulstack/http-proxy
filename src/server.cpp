@@ -32,8 +32,7 @@ wxSocketServer* Server::get_sock(){
 
 bool Server::accept(wxSocketBase* sock){
  Request cl_rq=get_request(sock);
- printf("Header: %s\n", cl_rq.header.c_str());
- printf("Content: %s\n", cl_rq.cont.c_str());
+ printf("%s\n", cl_rq.header.c_str());
  return true;
 }
 
