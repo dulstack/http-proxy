@@ -1,6 +1,12 @@
 #include "http.h"
 #include <string.h>
 #include <stdio.h>
+void HTTP::prepare_str(std::string& arg){
+ for(int i=0; i!=-1; i=arg.find("\n", i+1)){
+  if(i>1&&arg.c_str()[i-1]!='\r'){arg.replace(i, 1, "\r\n");}
+  i++;
+ }
+}
 static std::string get_line(const std::string& str, int line){
  std::string res="";
  int beg=0,end;		//begin and end of the line
@@ -19,12 +25,13 @@ std::string HTTP::get_header(const char* header, const char* name){
  int name_len=strlen(name);
  int lines=0;
  std::string s_header=header;
+ HTTP::prepare_str(s_header);
  for(int pos=0; pos!=-1; lines++){
   pos=s_header.find("\r\n", pos+1);
  }
  
  for(int i=0; i<lines; i++){
-  std::string line=get_line(header, i);
+  std::string line=get_line(s_header, i);
   if(line.size()>name_len&&line.substr(0, name_len)==name&&(line.c_str()[name_len]==' '||line.c_str()[name_len]==':')){
    res=line.substr(name_len+1, (line.size()-name_len-1));
    while(res.c_str()[0]==' '){res.erase(0,1);}
@@ -35,6 +42,7 @@ std::string HTTP::get_header(const char* header, const char* name){
 }
 std::string HTTP::remove_header(const char* header, const char* name){
  std::string res=header;
+ HTTP::prepare_str(res);
  int i=0, end=0;
  for(i=0; i!=-1; i++){
   i=res.find(name, i);
