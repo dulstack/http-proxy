@@ -19,6 +19,7 @@ void Server::stop(){
 bool Server::start(unsigned short port){
  wxIPV4address addr;
  addr.Service(port);
+ addr.Hostname("0.0.0.0");
  serv=new wxSocketServer(addr, wxSOCKET_REUSEADDR);
  if(!serv->Ok()){
   serv=NULL;return false;
@@ -32,6 +33,7 @@ wxSocketServer* Server::get_sock(){
 
 bool Server::accept(wxSocketBase* sock){
  Request cl_rq=get_request(sock);
+ if(cl_rq.header.size()<=0)return 0;
  std::string get=HTTP::get_header(cl_rq.header.c_str(), "GET"), host="";
  unsigned short port=80;
  if(get.substr(0, 7)=="HTTP://"){get.erase(0,7);}		//remove 'http://' from GET header ,because it will make us confuse where are the actual address and port

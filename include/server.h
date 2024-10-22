@@ -11,11 +11,12 @@ class Server{
  public:
   Server();
   ~Server();
-  bool start(unsigned short port);
+  bool start(unsigned short port=8080);
   Request get_request(wxSocketBase* sock);			//will read from socket
   bool accept(wxSocketBase* sock);
   void send_file(wxSocketBase* sock, const char* path, int status_code=200);
   void stop();
+  bool is_started();		//TODO: implement this
   wxSocketServer* get_sock();
  private:
   wxSocketServer* serv;
