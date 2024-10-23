@@ -31,7 +31,7 @@ wxSocketServer* Server::get_sock(){
  return this->serv;
 }
 
-Request Server::accept(wxSocketBase* sock){
+Request Server::process_rq(wxSocketBase* sock){
  Request cl_rq=get_request(sock);
  try{
   if(cl_rq.header.size()<=0)throw -1;
@@ -42,7 +42,7 @@ Request Server::accept(wxSocketBase* sock){
   int pos=get.find(":");
   if(pos==-1){
    pos=get.find(" ");
-   if(pos==-1)throw -1;			//TODO: send 400 bad request
+   if(pos==-1)throw 400;
    host=get.substr(0, pos);
   }
   else{
@@ -108,7 +108,6 @@ Request Server::get_request(wxSocketBase* sock){
  if(i>=len){
   //The end of header was not found, fail
   free(data);
-//  send_file(sock, "400.html", 400);
   res.header="";
   printf("DEBUG: End of header was not found\n");
   return res;
@@ -160,4 +159,8 @@ void Server::send_file(wxSocketBase* sock, const char* path, int status){
   free(buf);
  }
  fclose(fp);
+}
+
+bool Server::is_started(){
+ return serv!=NULL;
 }

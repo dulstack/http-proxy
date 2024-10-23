@@ -36,6 +36,16 @@ Frame::Frame(const wxString& title):wxFrame(NULL, -1, title, wxPoint(-1,-1), wxS
  panel->SetSizer(vbox);
  
 }
+void Frame::update_status(){
+ if(serv.is_started()){
+  status->SetForegroundColour(wxColour(0,255,0));
+  status->SetLabel(wxT("Started"));
+ }
+ else{
+  status->SetForegroundColour(wxColour(255,0,0));
+  status->SetLabel(wxT("Stopped"));
+ }
+}
 void Frame::log(const wxString& msg){
  tc_log->SetValue(tc_log->GetValue()+msg+"\n");
 }
@@ -53,7 +63,7 @@ void Frame::on_sock(wxSocketEvent& evt){
  wxSocketBase* sock=evt.GetSocket();
  switch(evt.GetSocketEvent()){
   case wxSOCKET_INPUT:{
-   Request rq=serv.accept(sock);
+   Request rq=serv.process_rq(sock);
    if(rq.header.size()<=0){
     wxMessageBox(wxT("Failed to process the connection"), wxT("DEBUG"), wxOK|wxICON_ERROR);
    }
@@ -79,13 +89,11 @@ void Frame::on_start(wxCommandEvent& evt){		//TODO: add custom ports
  sock->SetEventHandler(*this, ID_SERVER);
  sock->SetNotify(wxSOCKET_CONNECTION_FLAG);
  sock->Notify(true);
- status->SetForegroundColour(wxColour(0,255,0));
- status->SetLabel(wxT("Running"));
+ update_status();
 }
 void Frame::on_stop(wxCommandEvent& evt){
  serv.stop();
- status->SetForegroundColour(wxColour(255,0,0));
- status->SetLabel(wxT("Stopped"));
+ update_status();
 }
 void Frame::on_restart(wxCommandEvent& evt){
  
