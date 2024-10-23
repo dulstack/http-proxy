@@ -27,14 +27,17 @@ Frame::Frame(const wxString& title):wxFrame(NULL, -1, title, wxPoint(-1,-1), wxS
  status=new wxStaticText(panel, -1, wxT("Stopped"));
  status->SetForegroundColour(wxColour(255,0,0));
  
- resp=new wxTextCtrl(panel, -1, "", wxPoint(-1,-1),wxSize(-1,-1), wxTE_MULTILINE|wxTE_READONLY);
+ tc_log=new wxTextCtrl(panel, -1, "", wxPoint(-1,-1),wxSize(-1,-1), wxTE_MULTILINE|wxTE_READONLY);
  
  status_box->Add(new wxStaticText(panel, -1, wxT("Status: ")), 0, wxRIGHT, 10);
  status_box->Add(status, 0,0,0);
  vbox->Add(status_box, 0, wxLEFT|wxTOP, 3);
- vbox->Add(resp, 1, wxEXPAND|wxALL, 20);
+ vbox->Add(tc_log, 1, wxEXPAND|wxALL, 20);
  panel->SetSizer(vbox);
  
+}
+void Frame::log(const wxString& msg){
+ tc_log->SetValue(tc_log->GetValue()+msg+"\n");
 }
 void Frame::on_server(wxSocketEvent& evt){
  wxSocketBase *sock=serv.get_sock()->Accept(false);
@@ -50,12 +53,17 @@ void Frame::on_sock(wxSocketEvent& evt){
  wxSocketBase* sock=evt.GetSocket();
  switch(evt.GetSocketEvent()){
   case wxSOCKET_INPUT:{
-   if(!serv.accept(sock)){
-    wxMessageBox(wxT("Failed to accept the connection"), wxT("Error"), wxOK|wxICON_ERROR);
+   Request rq=serv.accept(sock);
+   if(rq.header.size()<=0){
+    wxMessageBox(wxT("Failed to process the connection"), wxT("DEBUG"), wxOK|wxICON_ERROR);
    }
+   else{
+    log(rq.header);
+   }
+   break;
   }
   case wxSOCKET_LOST:{
-   
+   break;
   }
   sock->Destroy();
  }

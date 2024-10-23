@@ -7,6 +7,7 @@ class Frame: public wxFrame{
  public:
   Frame(const wxString& title);
   void log(const wxString& message);
+  void update_status();
   void on_server(wxSocketEvent&);
   void on_sock(wxSocketEvent&);
   void on_start(wxCommandEvent&);
@@ -21,7 +22,7 @@ class Frame: public wxFrame{
    ID_SOCK
   };
   wxStaticText *status;
-  wxTextCtrl *resp;
+  wxTextCtrl *tc_log;
   Server serv;
 };
 #endif
