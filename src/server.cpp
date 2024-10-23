@@ -88,6 +88,7 @@ Request Server::get_request(wxSocketBase* sock){
  Request res={"", ""};
  char* data=(char*)malloc(8195);
  sock->Read(data, 8192);
+ printf("%s\n", data);
  int len=strlen(data);
  int i=0;
  bool is_serv=0;
@@ -98,7 +99,7 @@ Request Server::get_request(wxSocketBase* sock){
   }
   //In case of getting the server response
   if(data[i]=='\n'&&i+1<len&&data[i+1]=='\n'){is_serv=true;break;}
-  //make the header uppercase, if it is lowercase
+  //make the header uppercase
   if(data[i]>='a'&&data[i]<='z'){
    data[i]=data[i]-0x20;		//'a'-'A'=0x61-0x41=0x20
   }
