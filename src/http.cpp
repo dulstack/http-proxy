@@ -59,6 +59,21 @@ std::string HTTP::remove_header(const char* header, const char* name){
  }
  return res;
 }
+unsigned short HTTP::get_port(const std::string& addr){
+ std::string s_port;
+ //Default port is 80
+ int pos=addr.find(":");
+ if(pos==-1){
+  return 80;
+ }
+ s_port=addr.substr(pos+1, addr.size()-pos-1);
+ //check if there is only numbers
+ for(int i=0; i<s_port.size(); i++){
+  char c=s_port[i];
+  if(c<'0'||c>'9'){return 0;}
+ }
+ return (unsigned short)atoi(s_port.c_str());
+}
 std::string HTTP::get_addr(const std::string& line){
  //get the port from the line(possibly will not work with multiple lines)
  unsigned short port=-1;
@@ -92,7 +107,8 @@ std::string HTTP::get_addr(const std::string& line){
  for(start=i; start>0&&s_addr[start]!=' '; start--);
  if(start!=0){start++;}
  end=s_addr.find(" ", i+1);
- if(end==-1)end=s_addr.size()-1;
+ if(end==-1)end=s_addr.size();
+ 
  s_addr=s_addr.substr(start, end-start);
  return s_addr;
 }

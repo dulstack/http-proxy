@@ -3,9 +3,10 @@
 int main(){
  const char input[]=
  "GET \n"
- "HOST: https://exapmple.com:1024 o\n"
+ "HOST: https://exapmple.com:8080\r\n"
  "USER-AGENT: agent\r\n\r\n";
- printf("%s\n", HTTP::get_addr(HTTP::get_header(input, "HOST")).c_str());
+ std::string addr=HTTP::get_addr(HTTP::get_header(input,"HOST"));
+ printf("%i\n", HTTP::get_port(addr));
  
  return 0;
 }
