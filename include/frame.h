@@ -8,11 +8,16 @@ class Frame: public wxFrame{
   Frame(const wxString& title);
   void log(const wxString& message);
   void update_status();
+  
   void on_server(wxSocketEvent&);
   void on_sock(wxSocketEvent&);
+  
   void on_start(wxCommandEvent&);
   void on_stop(wxCommandEvent&);
   void on_restart(wxCommandEvent&);
+  void on_quit(wxCommandEvent&);
+  void on_close(wxCloseEvent&);
+  void quit();
  private:
   enum IDs{
    ID_START=1,

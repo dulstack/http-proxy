@@ -1,6 +1,6 @@
 1.Accept the connection from client
 2.Get the first 8194 characters of the request
-3.If no two line breaks found, then fail
+3.If two line breaks weren't found, then fail
 4.Get the string before two line breaks(header)			--sc_header(string client's header)
 5.Make the header uppercase(headers should be case-insensitive)
 6.Get the string after two line breaks(first part of content)

@@ -17,6 +17,8 @@ Frame::Frame(const wxString& title):wxFrame(NULL, -1, title, wxPoint(-1,-1), wxS
  Bind(wxEVT_COMMAND_MENU_SELECTED, &Frame::on_start, this, ID_START);
  Bind(wxEVT_COMMAND_MENU_SELECTED, &Frame::on_stop, this, ID_STOP);
  Bind(wxEVT_COMMAND_MENU_SELECTED, &Frame::on_restart,  this, ID_RESTART);
+ Bind(wxEVT_COMMAND_MENU_SELECTED, &Frame::on_quit, this, wxID_EXIT);
+ Bind(wxEVT_CLOSE_WINDOW, &Frame::on_close, this);
  Bind(wxEVT_SOCKET, &Frame::on_sock, this, ID_SOCK);
  Bind(wxEVT_SOCKET, &Frame::on_server, this, ID_SERVER);
  
@@ -65,10 +67,13 @@ void Frame::on_sock(wxSocketEvent& evt){
   case wxSOCKET_INPUT:{
    Request rq=serv.process_rq(sock);
    if(rq.header.size()<=0){
+    #ifdef DEBUG
     wxMessageBox(wxT("Failed to process the connection"), wxT("DEBUG"), wxOK|wxICON_ERROR);
+    #endif
    }
    else{
     log(rq.header);
+    log(rq.cont);
    }
    break;
   }
@@ -96,5 +101,23 @@ void Frame::on_stop(wxCommandEvent& evt){
  update_status();
 }
 void Frame::on_restart(wxCommandEvent& evt){
- 
+ serv.stop();
+ serv.start();
+}
+
+void Frame::on_close(wxCloseEvent& evt){
+ this->quit();
+}
+
+void Frame::on_quit(wxCommandEvent& evt){
+ this->quit();
+}
+void Frame::quit(){
+ if(!serv.is_started())this->Destroy();
+ else{
+  int response;
+  wxMessageDialog question(NULL,wxT("The server is still running\nDo you really want to quit?"), wxT("Question"), wxYES_NO|wxYES_DEFAULT|wxICON_QUESTION);
+  response=question.ShowModal();
+  if(response==wxID_YES)this->Destroy();
+ }
 }

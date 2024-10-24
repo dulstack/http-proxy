@@ -34,37 +34,31 @@ wxSocketServer* Server::get_sock(){
 Request Server::process_rq(wxSocketBase* sock){
  Request cl_rq=get_request(sock);
  try{
-  if(cl_rq.header.size()<=0)throw -1;
-  std::string get=HTTP::get_header(cl_rq.header.c_str(), "GET"), host="";
-  unsigned short port=80;
-  if(get.substr(0, 7)=="HTTP://"){get.erase(0,7);}		//remove 'http://' from GET header ,because it will make us confuse where are the actual address and port
-  if(get.substr(0, 8)=="HTTPS://"){get.erase(0,8);}
-  int pos=get.find(":");
-  if(pos==-1){
-   pos=get.find(" ");
-   if(pos==-1)throw 400;
-   host=get.substr(0, pos);
+  if(cl_rq.header.size()<=0)throw 400;
+  std::string host=HTTP::get_header(cl_rq.header.c_str(), "CONNECT");
+  if(host.size()<=0){
+   host=HTTP::get_header(cl_rq.header.c_str(), "HOST");
+   if(host.size()<=0)throw 400;
   }
-  else{
-   host=get.substr(0, pos);
-   int end_pos=get.find("/", pos+1);		//end of port
-   if(end_pos==-1){if((end_pos=get.find(" ", pos+1))==-1){throw -1;}}
-   std::string s_port=get.substr(pos+1, end_pos-pos-1);
-   port=(unsigned short)stoi(s_port);
-  }
-  pos=0;
-  if((pos=host.find("/"))!=-1){
-   host=host.substr(0, pos);
-  }
+  
+  host=HTTP::get_addr(host);
+  unsigned short port=HTTP::get_port(host);
+  int p=host.find(":");
+  if(p!=-1)host=host.substr(0,p);
+ 
   if(host.size()<=0){throw 400;}
   wxIPV4address rq_addr;
   rq_addr.Hostname(host);
+  //if the requested host is localhost, then fail
+  if(rq_addr.IsLocalHost()){throw 400;}
   rq_addr.Service(port);
   wxSocketClient rq_sock;
   rq_sock.Connect(rq_addr, false);
   rq_sock.WaitOnConnect(5);
   if(!rq_sock.IsConnected()){
+   #ifdef DEBUG
    printf("DEBUG: connection failed\n");
+   #endif
    throw -1;
   }
   rq_sock.Write(cl_rq.header.c_str(), cl_rq.header.size());
@@ -88,7 +82,6 @@ Request Server::get_request(wxSocketBase* sock){
  Request res={"", ""};
  char* data=(char*)malloc(8195);
  sock->Read(data, 8192);
- printf("%s\n", data);
  int len=strlen(data);
  int i=0;
  bool is_serv=0;
