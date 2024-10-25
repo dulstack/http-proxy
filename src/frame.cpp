@@ -13,6 +13,8 @@ Frame::Frame(const wxString& title):wxFrame(NULL, -1, title, wxPoint(-1,-1), wxS
  mb->Append(file, wxT("&File"));
  SetMenuBar(mb);
  
+ mb->Enable(ID_STOP, 0);
+ mb->Enable(ID_RESTART, 0);
  //Set the event handlers
  Bind(wxEVT_COMMAND_MENU_SELECTED, &Frame::on_start, this, ID_START);
  Bind(wxEVT_COMMAND_MENU_SELECTED, &Frame::on_stop, this, ID_STOP);
@@ -39,6 +41,7 @@ Frame::Frame(const wxString& title):wxFrame(NULL, -1, title, wxPoint(-1,-1), wxS
  
 }
 void Frame::update_status(){
+ wxMenuBar* mb=this->GetMenuBar();
  if(serv.is_started()){
   status->SetForegroundColour(wxColour(0,255,0));
   status->SetLabel(wxT("Started"));
@@ -47,6 +50,9 @@ void Frame::update_status(){
   status->SetForegroundColour(wxColour(255,0,0));
   status->SetLabel(wxT("Stopped"));
  }
+ mb->Enable(ID_START, !serv.is_started());
+ mb->Enable(ID_STOP, serv.is_started());
+ mb->Enable(ID_RESTART,serv.is_started());
 }
 void Frame::log(const wxString& msg){
  tc_log->SetValue(tc_log->GetValue()+msg+"\n");
