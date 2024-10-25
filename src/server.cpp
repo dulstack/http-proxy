@@ -103,7 +103,9 @@ Request Server::get_request(wxSocketBase* sock){
   //The end of header was not found, fail
   free(data);
   res.header="";
+  #ifdef DEBUG
   printf("DEBUG: End of header was not found\n");
+  #endif
   return res;
  }
  std::string s_cont_len=HTTP::get_header(res.header.c_str(), "CONTENT-LENGTH");
@@ -128,6 +130,11 @@ Request Server::get_request(wxSocketBase* sock){
  free(data);
  data=(char*)malloc(cont_len-cont_read);
  sock->Read(data, cont_len-cont_read);
+ int unread=cont_len-cont_read-sock->LastReadCount();
+ while(unread>0){
+  sock->Read(data, unread);
+  unread-=sock->LastReadCount();
+ }
  i=0;
  for(i=0;i<cont_len-cont_read; i++){
   res.cont+=data[i];
