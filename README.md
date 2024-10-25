@@ -1,7 +1,4 @@
 <html>
- <head>
-  <title>The simple http proxy server</title>
- </head>
  <body>
   <h1>About the project</h1>
   <p>
